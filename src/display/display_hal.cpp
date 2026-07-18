@@ -1,5 +1,6 @@
 #include "display_hal.h"
 #include "display_knomi.h"
+#include "display_waveshare.h"
 
 void display_init(void) {
 #ifdef KNOMIV2
@@ -7,7 +8,7 @@ void display_init(void) {
 #endif
 
 #ifdef WAVESHARE28C
-    // TODO: display_waveshare_init();
+    display_waveshare_init();
 #endif
 }
 
@@ -17,7 +18,7 @@ void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 #endif
 
 #ifdef WAVESHARE28C
-    // TODO: display_waveshare_flush(disp, area, color_p);
+    display_waveshare_flush(disp, area, color_p);
 #endif
 }
 
@@ -27,7 +28,7 @@ void display_set_brightness(int8_t level) {
 #endif
 
 #ifdef WAVESHARE28C
-    // TODO: display_waveshare_set_brightness(level);
+    display_waveshare_set_brightness(level);
 #endif
 }
 
@@ -37,7 +38,7 @@ bool display_read_touch(uint16_t *x, uint16_t *y) {
 #endif
 
 #ifdef WAVESHARE28C
-    // TODO: return display_waveshare_read_touch(x, y);
+    return display_waveshare_read_touch(x, y);
 #endif
 
     return false;
