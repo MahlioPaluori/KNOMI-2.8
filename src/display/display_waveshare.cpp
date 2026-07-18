@@ -19,7 +19,6 @@ static constexpr uint16_t kWaveshareWidth = 480;
 static constexpr uint16_t kWaveshareHeight = 480;
 
 static constexpr uint8_t kTca9554Address = 0x20;
-static constexpr uint8_t kTca9554InputReg = 0x00;
 static constexpr uint8_t kTca9554OutputReg = 0x01;
 static constexpr uint8_t kTca9554ConfigReg = 0x03;
 static constexpr uint8_t kTca9554ExioPin1 = 1;
@@ -32,9 +31,10 @@ static constexpr uint8_t kGt911StatusReady = 0x80;
 static constexpr uint8_t kGt911TouchCountMask = 0x0F;
 static constexpr int kTouchInterruptPin = 16;
 static constexpr int kBacklightPin = 6;
-static constexpr int kBacklightPwmChannel = 0;
-static constexpr int kBacklightPwmFrequencyHz = 5000;
-static constexpr int kBacklightPwmResolutionBits = 8;
+static constexpr int kBacklightPwmChannel = 1;
+static constexpr int kBacklightPwmFrequencyHz = 20000;
+static constexpr int kBacklightPwmResolutionBits = 10;
+static constexpr uint16_t kBacklightPwmMaxDuty = 1U << kBacklightPwmResolutionBits;
 static constexpr int kI2cMasterSda = 15;
 static constexpr int kI2cMasterScl = 7;
 static constexpr int kI2cMasterNum = 0;
@@ -93,6 +93,7 @@ void tca9554_init(void) {
     (void)i2c_param_config(kI2cMasterNum, &conf);
     (void)i2c_driver_install(kI2cMasterNum, conf.mode, 0, 0, 0);
     tca9554_write_reg(kTca9554ConfigReg, 0x00);
+    tca9554_write_reg(kTca9554OutputReg, 0x00);
 }
 
 void tca9554_set_pin(uint8_t pin, uint8_t state) {
@@ -161,13 +162,18 @@ bool gt911_read_touch(uint16_t *x, uint16_t *y) {
         return false;
     }
 
-    if ((status & kGt911StatusReady) == 0 || (status & kGt911TouchCountMask) == 0) {
+    if ((status & kGt911StatusReady) == 0) {
+        return false;
+    }
+
+    uint8_t clear_status = 0;
+    if ((status & kGt911TouchCountMask) == 0) {
+        (void)i2c_write(kGt911Address, kGt911StatusReg, &clear_status, sizeof(clear_status));
         return false;
     }
 
     uint8_t point[8] = {};
     bool read_ok = i2c_read(kGt911Address, kGt911FirstPointReg, point, sizeof(point));
-    uint8_t clear_status = 0;
     bool clear_ok = i2c_write(kGt911Address, kGt911StatusReg, &clear_status, sizeof(clear_status));
     if (!read_ok || !clear_ok) {
         return false;
@@ -586,7 +592,7 @@ void display_waveshare_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_colo
 
 void display_waveshare_set_brightness(int8_t level) {
     level = constrain(level, 0, 16);
-    uint32_t duty = (static_cast<uint32_t>(level) * 255U) / 16U;
+    uint32_t duty = (static_cast<uint32_t>(level) * kBacklightPwmMaxDuty) / 16U;
     ledcWrite(kBacklightPwmChannel, duty);
 }
 
