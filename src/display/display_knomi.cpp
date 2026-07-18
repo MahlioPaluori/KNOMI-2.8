@@ -1,6 +1,8 @@
 #include "display_knomi.h"
 #include "pinout.h"
 
+#ifndef WAVESHARE28C
+
 #include <TFT_eSPI.h>
 #include <CST816S.h>
 
@@ -124,3 +126,5 @@ void tft_fps_test(void) {
     Serial.println(test_sec, DEC);
     Serial.println("\r\n***************************\r\n");
 }
+
+#endif // !WAVESHARE28C

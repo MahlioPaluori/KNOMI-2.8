@@ -8,3 +8,8 @@
 
 #define TFT_WIDTH   480
 #define TFT_HEIGHT  480
+
+#define BOOT_PIN    0
+
+// The shared LVGL input adapter is enabled for touch-capable displays.
+#define CST816S_SUPPORT
