@@ -10,6 +10,19 @@
 // See SetupX_Template.h for all options available
 #define USER_SETUP_ID 46
 
+#ifdef ESP32_S3_TOUCH_LCD_2
+#define ST7789_DRIVER
+#define TFT_WIDTH  240
+#define TFT_HEIGHT 320
+
+#define TFT_MOSI ST7789_MOSI_PIN
+#define TFT_SCLK ST7789_SCLK_PIN
+#define TFT_CS   ST7789_CS_PIN
+#define TFT_DC   ST7789_DC_PIN
+#define TFT_RST  ST7789_RST_PIN
+#define TFT_RGB_ORDER TFT_RGB
+#define TFT_INVERSION_ON
+#else
 #define GC9A01_DRIVER
 #define TFT_WIDTH  240
 #define TFT_HEIGHT 240
@@ -21,6 +34,7 @@
 #define TFT_DC   GC9A01_DC_PIN   // Data Command control pin
 #define TFT_RST  GC9A01_RST_PIN  // Reset pin (could connect to RST pin)
 #define TFT_INVERSION_OFF
+#endif
 
 // #define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
 // #define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters

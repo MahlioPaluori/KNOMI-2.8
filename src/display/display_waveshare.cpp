@@ -1,5 +1,6 @@
 #include "display_waveshare.h"
 #include "pinout.h"
+#include "boards/board_layer.h"
 
 #ifdef WAVESHARE28C
 
@@ -19,22 +20,11 @@ static constexpr uint16_t kWaveshareWidth = 480;
 static constexpr uint16_t kWaveshareHeight = 480;
 
 static constexpr uint8_t kTca9554Address = 0x20;
+static constexpr uint8_t kTca9554InputReg = 0x00;
 static constexpr uint8_t kTca9554OutputReg = 0x01;
 static constexpr uint8_t kTca9554ConfigReg = 0x03;
 static constexpr uint8_t kTca9554ExioPin1 = 1;
-static constexpr uint8_t kTca9554ExioPin2 = 2;
 static constexpr uint8_t kTca9554ExioPin3 = 3;
-static constexpr uint8_t kGt911Address = 0x5D;
-static constexpr uint16_t kGt911StatusReg = 0x814E;
-static constexpr uint16_t kGt911FirstPointReg = 0x814F;
-static constexpr uint8_t kGt911StatusReady = 0x80;
-static constexpr uint8_t kGt911TouchCountMask = 0x0F;
-static constexpr int kTouchInterruptPin = 16;
-static constexpr int kBacklightPin = 6;
-static constexpr int kBacklightPwmChannel = 1;
-static constexpr int kBacklightPwmFrequencyHz = 20000;
-static constexpr int kBacklightPwmResolutionBits = 10;
-static constexpr uint16_t kBacklightPwmMaxDuty = 1U << kBacklightPwmResolutionBits;
 static constexpr int kI2cMasterSda = 15;
 static constexpr int kI2cMasterScl = 7;
 static constexpr int kI2cMasterNum = 0;
@@ -93,7 +83,6 @@ void tca9554_init(void) {
     (void)i2c_param_config(kI2cMasterNum, &conf);
     (void)i2c_driver_install(kI2cMasterNum, conf.mode, 0, 0, 0);
     tca9554_write_reg(kTca9554ConfigReg, 0x00);
-    tca9554_write_reg(kTca9554OutputReg, 0x00);
 }
 
 void tca9554_set_pin(uint8_t pin, uint8_t state) {
@@ -104,84 +93,6 @@ void tca9554_set_pin(uint8_t pin, uint8_t state) {
         output = static_cast<uint8_t>(output & ~(1U << (pin - 1)));
     }
     tca9554_write_reg(kTca9554OutputReg, output);
-}
-
-bool i2c_read(uint8_t address, uint16_t reg, uint8_t *data, size_t length) {
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    if (!cmd) {
-        return false;
-    }
-
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (address << 1) | I2C_MASTER_WRITE, true);
-    i2c_master_write_byte(cmd, static_cast<uint8_t>(reg >> 8), true);
-    i2c_master_write_byte(cmd, static_cast<uint8_t>(reg), true);
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (address << 1) | I2C_MASTER_READ, true);
-    if (length > 1) {
-        i2c_master_read(cmd, data, length - 1, I2C_MASTER_ACK);
-    }
-    i2c_master_read_byte(cmd, data + length - 1, I2C_MASTER_NACK);
-    i2c_master_stop(cmd);
-    esp_err_t err = i2c_master_cmd_begin(kI2cMasterNum, cmd, pdMS_TO_TICKS(kI2cMasterTimeoutMs));
-    i2c_cmd_link_delete(cmd);
-    return err == ESP_OK;
-}
-
-bool i2c_write(uint8_t address, uint16_t reg, const uint8_t *data, size_t length) {
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    if (!cmd) {
-        return false;
-    }
-
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (address << 1) | I2C_MASTER_WRITE, true);
-    i2c_master_write_byte(cmd, static_cast<uint8_t>(reg >> 8), true);
-    i2c_master_write_byte(cmd, static_cast<uint8_t>(reg), true);
-    i2c_master_write(cmd, const_cast<uint8_t *>(data), length, true);
-    i2c_master_stop(cmd);
-    esp_err_t err = i2c_master_cmd_begin(kI2cMasterNum, cmd, pdMS_TO_TICKS(kI2cMasterTimeoutMs));
-    i2c_cmd_link_delete(cmd);
-    return err == ESP_OK;
-}
-
-void gt911_init(void) {
-    tca9554_set_pin(kTca9554ExioPin2, 0);
-    pinMode(kTouchInterruptPin, OUTPUT);
-    digitalWrite(kTouchInterruptPin, LOW); // Select the GT911 0x5D address during reset.
-    vTaskDelay(pdMS_TO_TICKS(10));
-    tca9554_set_pin(kTca9554ExioPin2, 1);
-    vTaskDelay(pdMS_TO_TICKS(50));
-    pinMode(kTouchInterruptPin, INPUT);
-    vTaskDelay(pdMS_TO_TICKS(50));
-}
-
-bool gt911_read_touch(uint16_t *x, uint16_t *y) {
-    uint8_t status = 0;
-    if (!i2c_read(kGt911Address, kGt911StatusReg, &status, sizeof(status))) {
-        return false;
-    }
-
-    if ((status & kGt911StatusReady) == 0) {
-        return false;
-    }
-
-    uint8_t clear_status = 0;
-    if ((status & kGt911TouchCountMask) == 0) {
-        (void)i2c_write(kGt911Address, kGt911StatusReg, &clear_status, sizeof(clear_status));
-        return false;
-    }
-
-    uint8_t point[8] = {};
-    bool read_ok = i2c_read(kGt911Address, kGt911FirstPointReg, point, sizeof(point));
-    bool clear_ok = i2c_write(kGt911Address, kGt911StatusReg, &clear_status, sizeof(clear_status));
-    if (!read_ok || !clear_ok) {
-        return false;
-    }
-
-    if (x) *x = static_cast<uint16_t>(point[1] | (point[2] << 8));
-    if (y) *y = static_cast<uint16_t>(point[3] | (point[4] << 8));
-    return true;
 }
 
 void st7701_write_command(uint8_t cmd) {
@@ -559,13 +470,10 @@ void waveshare_panel_init(void) {
 
 void display_waveshare_init(void) {
     tca9554_init();
-    gt911_init();
+    board_touch_init();
     st7701_reset();
     st7701_init_controller();
     waveshare_panel_init();
-    ledcSetup(kBacklightPwmChannel, kBacklightPwmFrequencyHz, kBacklightPwmResolutionBits);
-    ledcAttachPin(kBacklightPin, kBacklightPwmChannel);
-    display_waveshare_set_brightness(16);
 }
 
 void display_waveshare_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
@@ -591,13 +499,15 @@ void display_waveshare_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_colo
 }
 
 void display_waveshare_set_brightness(int8_t level) {
-    level = constrain(level, 0, 16);
-    uint32_t duty = (static_cast<uint32_t>(level) * kBacklightPwmMaxDuty) / 16U;
-    ledcWrite(kBacklightPwmChannel, duty);
+    board_backlight_set(level);
+}
+
+bool display_waveshare_has_touch(void) {
+    return true;
 }
 
 bool display_waveshare_read_touch(uint16_t *x, uint16_t *y) {
-    return gt911_read_touch(x, y);
+    return board_touch_read(x, y);
 }
 
 #endif // WAVESHARE28C

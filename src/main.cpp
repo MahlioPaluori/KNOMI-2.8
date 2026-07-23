@@ -1,6 +1,9 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include "lvgl_hal.h"
 #include "pinout.h"
+#include "boards/board_layer.h"
+#include "layout/layout_manager.h"
 
 #include "ui/ui.h"
 
@@ -34,10 +37,8 @@ void setup() {
     Serial.println(ESP.getPsramSize());
     Serial.println("\r\n\r\n------------------------------------------\r\n");
 
-#ifdef I2C0_SUPPORT
-    i2c0.begin(I2C0_SDA_PIN, I2C0_SCL_PIN, I2C0_SPEED);
-    // i2c1.begin(I2C1_SDA_PIN, I2C1_SCL_PIN, I2C1_SPEED);
-#endif
+    board_init();
+    LayoutManager::init();
 
     xTaskCreate(lvgl_ui_task, "lvgl ui",
         4096,  // Stack size (bytes)

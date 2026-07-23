@@ -3,9 +3,14 @@
 
 #include "lvgl_hal.h"
 #include "lvgl_usr.h"
+#include "knomi.h"
 #include "ui/ui.h"
 #include "moonraker.h"
 #include "ui_overlay/lv_overlay.h"
+#include "ui_overlay/status_bar/status_bar.h"
+#include "boards/board_layer.h"
+#include "layout/layout_manager.h"
+#include "ui_overlay/status_bar/status_bar_runtime.h"
 
 
 /****************** lvgl ui call function ******************/
@@ -48,6 +53,9 @@ void lvgl_ui_task(void * parameter) {
     lv_btn_init();
     lvgl_hal_init();
     ui_init();
+    const layout_spec_t &layout = LayoutManager::get();
+    StatusBar::init();
+    status_bar_runtime_init();
 
 #ifndef LIS2DW_SUPPORT
     // progress in center if no lis2dw accelerometer data to display
@@ -64,7 +72,7 @@ void lvgl_ui_task(void * parameter) {
 
     lv_obj_t * label = lv_label_create(ui_ScreenTestImg);
     lv_obj_set_size(label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -30);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -(int16_t)(layout.content_height / 8));
     lv_label_set_text_static(label, FW_VERSION);
 
     // Add all button style
@@ -81,7 +89,7 @@ void lvgl_ui_task(void * parameter) {
     // Add welcome gif
     lv_obj_t * img_welcome_gif = lv_gif_create(ui_ScreenWelcome);
     lv_gif_set_src(img_welcome_gif, &gif_welcome);
-    lv_obj_align(img_welcome_gif, LV_ALIGN_CENTER, 0, -36);
+    lv_obj_align(img_welcome_gif, LV_ALIGN_CENTER, 0, -(int16_t)((layout.content_height * 3) / 20));
 
     // Create a QR Code
     lv_obj_t * qr = lv_qrcode_create(ui_ScreenQRCode, 130, LV_COLOR_MAKE(0xff, 0xff, 0xff), LV_COLOR_MAKE(0, 0, 0));
@@ -134,6 +142,7 @@ void lvgl_ui_task(void * parameter) {
 
         lv_loop_auto_idle(status);
         lv_loop_btn_event();
+        status_bar_runtime_update();
 
         delay(5);
     }
