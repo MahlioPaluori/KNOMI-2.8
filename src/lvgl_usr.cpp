@@ -7,10 +7,9 @@
 #include "ui/ui.h"
 #include "moonraker.h"
 #include "ui_overlay/lv_overlay.h"
-#include "ui_overlay/status_bar/status_bar.h"
-#include "boards/board_layer.h"
 #include "layout/layout_manager.h"
-#include "ui_overlay/status_bar/status_bar_runtime.h"
+#include "ui_overlay/ui_root_layout.h"
+#include "ui_overlay/status_bar/status_bar.h"
 
 
 /****************** lvgl ui call function ******************/
@@ -48,14 +47,49 @@ void lv_roller_set_extrude(lv_event_t * e) {
 
 void lv_popup_warning(const char * warning, bool clickable);
 void lv_popup_remove(lv_event_t * e) ;
+
+namespace {
+void create_status_bar_for_screen(lv_obj_t *screen) {
+    lv_obj_t *bottom = ui_root_layout_get_bottom_container(screen);
+    if (!bottom) {
+        return;
+    }
+    StatusBar::create(bottom);
+}
+
+void create_status_bars_for_all_screens(void) {
+    create_status_bar_for_screen(ui_ScreenMainGif);
+    create_status_bar_for_screen(ui_ScreenWelcome);
+    create_status_bar_for_screen(ui_ScreenWIFIConnecting);
+    create_status_bar_for_screen(ui_ScreenWIFIDisconnect);
+    create_status_bar_for_screen(ui_ScreenExtrude);
+    create_status_bar_for_screen(ui_ScreenMove);
+    create_status_bar_for_screen(ui_ScreenTemp);
+    create_status_bar_for_screen(ui_ScreenSetTemp);
+    create_status_bar_for_screen(ui_ScreenSetExtrude);
+    create_status_bar_for_screen(ui_ScreenPrinting);
+    create_status_bar_for_screen(ui_ScreenHeatingNozzle);
+    create_status_bar_for_screen(ui_ScreenHeatingBed);
+    create_status_bar_for_screen(ui_ScreenRoller);
+    create_status_bar_for_screen(ui_ScreenQRCode);
+    create_status_bar_for_screen(ui_ScreenBacklight);
+    create_status_bar_for_screen(ui_ScreenDialog);
+    create_status_bar_for_screen(ui_ScreenPopup);
+    create_status_bar_for_screen(ui_ScreenColorWheel);
+    create_status_bar_for_screen(ui_ScreenInfo);
+    create_status_bar_for_screen(ui_ScreenTestImg);
+    create_status_bar_for_screen(ui_ScreenTestSensor);
+}
+}
+
 // lvgl ui
 void lvgl_ui_task(void * parameter) {
     lv_btn_init();
     lvgl_hal_init();
     ui_init();
+    ui_root_layout_apply_all();
+    create_status_bars_for_all_screens();
     const layout_spec_t &layout = LayoutManager::get();
-    StatusBar::init();
-    status_bar_runtime_init();
 
 #ifndef LIS2DW_SUPPORT
     // progress in center if no lis2dw accelerometer data to display
@@ -70,9 +104,14 @@ void lvgl_ui_task(void * parameter) {
     lv_obj_del(ui_label_printing_acc_z);
 #endif
 
-    lv_obj_t * label = lv_label_create(ui_ScreenTestImg);
+    lv_obj_t *screen_test_img_app = ui_root_layout_get_app_container(ui_ScreenTestImg);
+    lv_obj_t *screen_main_gif_app = ui_root_layout_get_app_container(ui_ScreenMainGif);
+    lv_obj_t *screen_welcome_app = ui_root_layout_get_app_container(ui_ScreenWelcome);
+    lv_obj_t *screen_qrcode_app = ui_root_layout_get_app_container(ui_ScreenQRCode);
+
+    lv_obj_t * label = lv_label_create(screen_test_img_app);
     lv_obj_set_size(label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -(int16_t)(layout.content_height / 8));
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -(int16_t)(layout.app_height / 8));
     lv_label_set_text_static(label, FW_VERSION);
 
     // Add all button style
@@ -82,17 +121,17 @@ void lvgl_ui_task(void * parameter) {
     lv_theme_color_style();
 
     // Add logo gif
-    ui_img_main_gif = lv_gif_create(ui_ScreenMainGif);
+    ui_img_main_gif = lv_gif_create(screen_main_gif_app);
     lv_gif_set_src(ui_img_main_gif, gif_idle[0]);
     lv_obj_align(ui_img_main_gif, LV_ALIGN_CENTER, 0, 0);
 
     // Add welcome gif
-    lv_obj_t * img_welcome_gif = lv_gif_create(ui_ScreenWelcome);
+    lv_obj_t * img_welcome_gif = lv_gif_create(screen_welcome_app);
     lv_gif_set_src(img_welcome_gif, &gif_welcome);
-    lv_obj_align(img_welcome_gif, LV_ALIGN_CENTER, 0, -(int16_t)((layout.content_height * 3) / 20));
+    lv_obj_align(img_welcome_gif, LV_ALIGN_CENTER, 0, -(int16_t)((layout.app_height * 3) / 20));
 
     // Create a QR Code
-    lv_obj_t * qr = lv_qrcode_create(ui_ScreenQRCode, 130, LV_COLOR_MAKE(0xff, 0xff, 0xff), LV_COLOR_MAKE(0, 0, 0));
+    lv_obj_t * qr = lv_qrcode_create(screen_qrcode_app, 130, LV_COLOR_MAKE(0xff, 0xff, 0xff), LV_COLOR_MAKE(0, 0, 0));
     const char * data = "https://bigtreetech.github.io/docs/KNOMI2.html";
     lv_qrcode_update(qr, data, strlen(data));
     lv_obj_center(qr);
@@ -142,7 +181,6 @@ void lvgl_ui_task(void * parameter) {
 
         lv_loop_auto_idle(status);
         lv_loop_btn_event();
-        status_bar_runtime_update();
 
         delay(5);
     }

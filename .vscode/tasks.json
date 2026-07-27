@@ -1,0 +1,187 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-knomiv2-root-layout",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-root-layout",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "verify-knomiv2-statusbar-layout",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "verify-esp32s3-statusbar-layout",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-statusbar-static",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-statusbar-static",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-printer-state",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-printer-state",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "audit-build-knomiv2",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "audit-build-esp32s3",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-clock",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-clock",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-status-message",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"knomiv2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-status-message",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

@@ -6,16 +6,16 @@
 
 struct layout_spec_t {
     LayoutType type;
-    uint16_t display_width;
-    uint16_t display_height;
-    uint16_t content_x;
-    uint16_t content_y;
-    uint16_t content_width;
-    uint16_t content_height;
-    uint16_t status_bar_x;
-    uint16_t status_bar_y;
-    uint16_t status_bar_width;
-    uint16_t status_bar_height;
+    uint16_t root_width;
+    uint16_t root_height;
+    uint16_t app_x;
+    uint16_t app_y;
+    uint16_t app_width;
+    uint16_t app_height;
+    uint16_t bottom_x;
+    uint16_t bottom_y;
+    uint16_t bottom_width;
+    uint16_t bottom_height;
 };
 
 namespace LayoutManager {

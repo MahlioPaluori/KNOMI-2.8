@@ -36,17 +36,17 @@ void lvgl_hal_init(void) {
 
     // must static
     static lv_disp_draw_buf_t draw_buf;
-    static lv_color_t *color_buf = (lv_color_t *)LV_MEM_CUSTOM_ALLOC(layout.display_width * layout.display_height * sizeof(lv_color_t));
+    static lv_color_t *color_buf = (lv_color_t *)LV_MEM_CUSTOM_ALLOC(layout.root_width * layout.root_height * sizeof(lv_color_t));
     lv_init();
-    lv_disp_draw_buf_init(&draw_buf, color_buf, NULL, layout.display_width * layout.display_height);
+    lv_disp_draw_buf_init(&draw_buf, color_buf, NULL, layout.root_width * layout.root_height);
 
     /*Initialize the display*/
     // must static
     static lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
     /*Change the following line to your display resolution*/
-    disp_drv.hor_res = layout.display_width;
-    disp_drv.ver_res = layout.display_height;
+    disp_drv.hor_res = layout.root_width;
+    disp_drv.ver_res = layout.root_height;
     disp_drv.flush_cb = usr_disp_flush;
     disp_drv.draw_buf = &draw_buf;
     lv_disp_drv_register(&disp_drv);
