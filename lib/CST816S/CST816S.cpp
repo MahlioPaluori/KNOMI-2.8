@@ -30,10 +30,12 @@ void CST816S::_setReady(void) {
  *  @brief  reset touch screen
  */
 void CST816S::_reset(void) {
-  digitalWrite(_rst, LOW);
-  delay(10);
-  digitalWrite(_rst, HIGH );
-  delay(50);
+  if (_rst != -1) {
+    digitalWrite(_rst, LOW);
+    delay(10);
+    digitalWrite(_rst, HIGH );
+    delay(50);
+  }
 }
 
 /*!
@@ -56,12 +58,19 @@ void CST816S::wakeup(void) {
 bool CST816S::begin(uint8_t addr, int interrupt, uint8_t id) {
   _i2caddr = addr;
   i2c->begin();
-  pinMode(_irq, INPUT);
-  pinMode(_rst, OUTPUT);
-  _reset();
   
-  attachInterrupt(_irq, std::bind(&CST816S::_setReady, this), interrupt);
-    /* Check connection */
+  // Only configure pins if they are defined (not -1)
+  if (_irq != -1) {
+    pinMode(_irq, INPUT);
+    attachInterrupt(_irq, std::bind(&CST816S::_setReady, this), interrupt);
+  }
+  
+  if (_rst != -1) {
+    pinMode(_rst, OUTPUT);
+    _reset();
+  }
+  
+  /* Check connection */
   // if (getDeviceID() != id) {
   //   /* No CST816S detected ... return false */
   //   // Serial.println(deviceid, HEX);

@@ -17,6 +17,7 @@
 
 #define TFT_MOSI ST7789_MOSI_PIN
 #define TFT_SCLK ST7789_SCLK_PIN
+#define TFT_MISO ST7789_MISO_PIN
 #define TFT_CS   ST7789_CS_PIN
 #define TFT_DC   ST7789_DC_PIN
 #define TFT_RST  ST7789_RST_PIN
@@ -49,8 +50,13 @@
  * tscycw (Write) min: 10ns, almost 100Mhz
  * tscycr (Read) min: 150ns, almost 6.6Mhz
  */
+#ifdef ESP32_S3_TOUCH_LCD_2
+#define SPI_FREQUENCY  40000000
+#define SPI_READ_FREQUENCY  5000000
+#else
 #define SPI_FREQUENCY  80000000
 #define SPI_READ_FREQUENCY  5000000
+#endif
 // #define SUPPORT_TRANSACTIONS
 
 #endif

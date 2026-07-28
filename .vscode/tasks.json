@@ -182,6 +182,58 @@
 			],
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "rebuild-esp32s3-after-display-serial-fix",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "rebuild-esp32s3-after-spi-serial-fallback",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build-esp32s3-pin-validation",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "rebuild-esp32s3-pin-validation-2",
+			"type": "shell",
+			"command": "C:\\Users\\mahla\\.platformio\\penv\\Scripts\\platformio.exe",
+			"args": [
+				"run",
+				"-e",
+				"esp32_s3_touch_lcd_2",
+				"-s"
+			],
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }
