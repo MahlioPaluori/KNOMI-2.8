@@ -10,6 +10,7 @@ void show(void);
 void hide(void);
 lv_obj_t *getRoot(void);
 void setStatusMessage(const char *text);
+void setWifiText(const char *text);
 void setPrinterState(const char *state);
 void setClock(const char *time);
 }

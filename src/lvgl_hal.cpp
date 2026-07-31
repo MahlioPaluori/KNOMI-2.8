@@ -49,7 +49,9 @@ void lvgl_hal_init(void) {
     disp_drv.ver_res = layout.root_height;
     disp_drv.flush_cb = usr_disp_flush;
     disp_drv.draw_buf = &draw_buf;
-    lv_disp_drv_register(&disp_drv);
+    lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
+    lv_disp_set_bg_color(disp, lv_color_hex(0xFF0000));
+    lv_disp_set_bg_opa(disp, LV_OPA_COVER);
     // lv_disp_set_rotation(NULL, LV_DISP_ROT_180);
 
     /* touch screen */

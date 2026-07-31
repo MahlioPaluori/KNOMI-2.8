@@ -31,13 +31,20 @@ void style_container(lv_obj_t *obj) {
     if (!obj) {
         return;
     }
+    lv_obj_remove_style_all(obj);
     lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(obj, lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_img_opa(obj, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_opa(obj, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_opa(obj, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_all(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
     lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_clear_flag(obj, LV_OBJ_FLAG_CLICKABLE);
 }
 
 lv_obj_t *create_zone_label(lv_obj_t *parent, const char *text) {
@@ -48,13 +55,16 @@ lv_obj_t *create_zone_label(lv_obj_t *parent, const char *text) {
 }
 
 void StatusBar::create(lv_obj_t *parent) {
-    if (!parent) {
+    if (!parent || s_widgets.root) {
         return;
     }
 
     lv_obj_t *root = lv_obj_create(parent);
-    lv_obj_set_size(root, LV_PCT(100), LV_PCT(100));
+    lv_obj_set_size(root, LV_PCT(100), 80);
+    lv_obj_align(root, LV_ALIGN_BOTTOM_MID, 0, 0);
     style_container(root);
+    lv_obj_clear_flag(root, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(root, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_flex_flow(root, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(root, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_left(root, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -108,9 +118,9 @@ void StatusBar::create(lv_obj_t *parent) {
     s_widgets.printerStateLabel = printer_state_label;
     s_widgets.clockLabel = clock_label;
 
-    StatusBar::setStatusMessage("ONLINE");
-    StatusBar::setPrinterState("READY");
-    StatusBar::setClock("12:34");
+    StatusBar::setWifiText("--");
+    StatusBar::setPrinterState("--");
+    StatusBar::setClock("--:--");
 }
 
 void StatusBar::destroy(void) {
@@ -147,6 +157,10 @@ lv_obj_t *StatusBar::getRoot(void) {
 void StatusBar::setStatusMessage(const char *text) {
     lv_label_set_text(s_widgets.statusMessageLabel, text);
     lv_obj_invalidate(s_widgets.statusMessageLabel);
+}
+
+void StatusBar::setWifiText(const char *text) {
+    StatusBar::setStatusMessage(text);
 }
 
 void StatusBar::setPrinterState(const char *state) {

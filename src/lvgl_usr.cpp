@@ -10,6 +10,7 @@
 #include "layout/layout_manager.h"
 #include "ui_overlay/ui_root_layout.h"
 #include "ui_overlay/status_bar/status_bar.h"
+#include "ui_overlay/status_bar/status_bar_runtime.h"
 
 
 /****************** lvgl ui call function ******************/
@@ -49,36 +50,8 @@ void lv_popup_warning(const char * warning, bool clickable);
 void lv_popup_remove(lv_event_t * e) ;
 
 namespace {
-void create_status_bar_for_screen(lv_obj_t *screen) {
-    lv_obj_t *bottom = ui_root_layout_get_bottom_container(screen);
-    if (!bottom) {
-        return;
-    }
-    StatusBar::create(bottom);
-}
-
-void create_status_bars_for_all_screens(void) {
-    create_status_bar_for_screen(ui_ScreenMainGif);
-    create_status_bar_for_screen(ui_ScreenWelcome);
-    create_status_bar_for_screen(ui_ScreenWIFIConnecting);
-    create_status_bar_for_screen(ui_ScreenWIFIDisconnect);
-    create_status_bar_for_screen(ui_ScreenExtrude);
-    create_status_bar_for_screen(ui_ScreenMove);
-    create_status_bar_for_screen(ui_ScreenTemp);
-    create_status_bar_for_screen(ui_ScreenSetTemp);
-    create_status_bar_for_screen(ui_ScreenSetExtrude);
-    create_status_bar_for_screen(ui_ScreenPrinting);
-    create_status_bar_for_screen(ui_ScreenHeatingNozzle);
-    create_status_bar_for_screen(ui_ScreenHeatingBed);
-    create_status_bar_for_screen(ui_ScreenRoller);
-    create_status_bar_for_screen(ui_ScreenQRCode);
-    create_status_bar_for_screen(ui_ScreenBacklight);
-    create_status_bar_for_screen(ui_ScreenDialog);
-    create_status_bar_for_screen(ui_ScreenPopup);
-    create_status_bar_for_screen(ui_ScreenColorWheel);
-    create_status_bar_for_screen(ui_ScreenInfo);
-    create_status_bar_for_screen(ui_ScreenTestImg);
-    create_status_bar_for_screen(ui_ScreenTestSensor);
+void create_status_bar_for_top_layer(void) {
+    StatusBar::create(lv_layer_top());
 }
 }
 
@@ -88,7 +61,8 @@ void lvgl_ui_task(void * parameter) {
     lvgl_hal_init();
     ui_init();
     ui_root_layout_apply_all();
-    create_status_bars_for_all_screens();
+    create_status_bar_for_top_layer();
+    status_bar_runtime_init();
     const layout_spec_t &layout = LayoutManager::get();
 
 #ifndef LIS2DW_SUPPORT
@@ -181,6 +155,7 @@ void lvgl_ui_task(void * parameter) {
 
         lv_loop_auto_idle(status);
         lv_loop_btn_event();
+        status_bar_runtime_update();
 
         delay(5);
     }

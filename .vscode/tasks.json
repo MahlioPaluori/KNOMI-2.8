@@ -234,6 +234,97 @@
 			],
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "build-knomiv1",
+			"type": "shell",
+			"command": "\"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\"",
+			"args": [
+				"run",
+				"-d",
+				"c:/Users/mahla/KNOMI",
+				"-e",
+				"knomiv1"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv1-fixed",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv1",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-fixed",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2-validate",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-validate",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-statusbar-sprint",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2-statusbar-sprint",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-statusbar-whitefix",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2-statusbar-whitefix",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-statusbar-single-root",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2-statusbar-single-root",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
+		},
+		{
+			"label": "build-knomiv2-bg-red-diagnostic",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e knomiv2",
+			"group": "build"
+		},
+		{
+			"label": "build-esp32-s3-touch-lcd-2-bg-red-diagnostic",
+			"type": "shell",
+			"command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\platformio.exe\" run -d c:/Users/mahla/KNOMI -e esp32_s3_touch_lcd_2",
+			"group": "build"
 		}
 	]
 }

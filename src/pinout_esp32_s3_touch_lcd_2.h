@@ -31,7 +31,6 @@
 #define CST816S_RST_PIN -1
 
 // Touch coordinate rotation (0=no rotation, 1=90°, 2=180°, 3=270°)
-// If touch is rotated 90° CCW, try rotation=0
 #define CST816S_ROTATION 0
 
 #endif

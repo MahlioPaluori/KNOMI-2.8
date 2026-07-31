@@ -47,7 +47,7 @@ void wrap_screen(lv_obj_t *screen, const layout_spec_t &layout) {
         original_children[i] = lv_obj_get_child(screen, i);
     }
 
-    lv_obj_set_size(screen, layout.root_width, layout.root_height);
+    lv_obj_set_size(screen, layout.app_width, layout.app_height);
     lv_obj_set_scrollbar_mode(screen, LV_SCROLLBAR_MODE_OFF);
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
 
@@ -55,6 +55,22 @@ void wrap_screen(lv_obj_t *screen, const layout_spec_t &layout) {
     lv_obj_set_pos(app, layout.app_x, layout.app_y);
     lv_obj_set_size(app, layout.app_width, layout.app_height);
     style_container(app);
+
+    const void *bg_img_src = lv_obj_get_style_bg_img_src(screen, LV_PART_MAIN);
+    lv_opa_t bg_opa = lv_obj_get_style_bg_opa(screen, LV_PART_MAIN);
+    lv_color_t bg_color = lv_obj_get_style_bg_color(screen, LV_PART_MAIN);
+    if (bg_img_src) {
+        lv_obj_set_style_bg_img_src(app, bg_img_src, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+    if (bg_opa > LV_OPA_MIN) {
+        lv_obj_set_style_bg_opa(app, bg_opa, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+    lv_obj_set_style_bg_color(app, bg_color, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    // Screen must stay transparent after wrap; AppContainer is the background owner.
+    lv_obj_set_style_bg_img_src(screen, nullptr, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     for (uint32_t i = 0; i < child_count; ++i) {
         if (original_children[i]) {
@@ -68,6 +84,7 @@ void wrap_screen(lv_obj_t *screen, const layout_spec_t &layout) {
         lv_obj_set_pos(bottom, layout.bottom_x, layout.bottom_y);
         lv_obj_set_size(bottom, layout.bottom_width, layout.bottom_height);
         style_container(bottom);
+        lv_obj_set_style_bg_opa(bottom, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 
     register_entry(screen, app, bottom);

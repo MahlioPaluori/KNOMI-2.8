@@ -21,7 +21,7 @@
 #define TFT_CS   ST7789_CS_PIN
 #define TFT_DC   ST7789_DC_PIN
 #define TFT_RST  ST7789_RST_PIN
-#define TFT_RGB_ORDER TFT_RGB
+#define TFT_RGB_ORDER TFT_BGR
 #define TFT_INVERSION_ON
 #else
 #define GC9A01_DRIVER
