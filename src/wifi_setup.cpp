@@ -19,6 +19,10 @@ knomi_config_t knomi_config;
 void webserver_setup(void);
 
 static uint16_t knomi_config_require = WEB_POST_NULL;
+static volatile bool s_power_suspend_requested = false;
+static volatile bool s_power_suspended = false;
+static volatile bool s_power_suspend_failed = false;
+static bool s_power_resume_reconnect = false;
 
 // ap info + sta info + wifi mode + wifi mode
 void knomi_config_require_change(uint16_t require) {
@@ -122,6 +126,29 @@ static wifi_status_t wifi_status = WIFI_STATUS_INIT;
 
 wifi_status_t wifi_get_connect_status(void) {
     return wifi_status;
+}
+
+bool wifi_power_suspend(uint32_t timeout_ms) {
+    s_power_suspend_failed = false;
+    s_power_suspend_requested = true;
+    uint32_t started_ms = millis();
+    while (!s_power_suspended && !s_power_suspend_failed &&
+           static_cast<uint32_t>(millis() - started_ms) < timeout_ms) {
+        delay(10);
+    }
+
+    if (s_power_suspended) {
+        return true;
+    }
+
+    s_power_suspend_requested = false;
+    return false;
+}
+
+bool wifi_power_resume(void) {
+    bool resume_requested = s_power_suspend_requested || s_power_suspended;
+    s_power_suspend_requested = false;
+    return resume_requested;
 }
 
 static p_function_t wifi_scan_refresh_callback = NULL;
@@ -290,11 +317,21 @@ restart:
             if (wifi_status != WIFI_STATUS_CONNECTED) {
                 Serial.println("sta connect failed!!!");
                 wifi_status = WIFI_STATUS_ERROR;
+                if (s_power_resume_reconnect) {
+                    // A transient post-wake failure must not replace the user's
+                    // configured STA/APSTA mode with AP-only mode.
+                    knomi_config_require |= WEB_POST_WIFI_CONFIG_STA;
+                    delay(1000);
+                    return;
+                }
                 // reset wifi mode to "ap"
                 strlcpy(knomi_config.mode, "ap", sizeof(knomi_config.mode));
                 knomi_config_require |= WEB_POST_WIFI_CONFIG_MODE;
                 goto restart;
             }
+
+            s_power_resume_reconnect = false;
+
             wifi_refresh_connected();
             Serial.print("sta ip: ");
             Serial.println(WiFi.localIP());   /*Printing IP address of Connected network*/
@@ -332,6 +369,31 @@ void wifi_task(void * parameter) {
     webserver_setup();
 
     while (1) {
+        if (s_power_suspend_requested) {
+            if (!s_power_suspended && !s_power_suspend_failed) {
+                WiFi.scanDelete();
+                WiFi.disconnect(false, false);
+                if (WiFi.mode(WIFI_MODE_NULL)) {
+                    wifi_status = WIFI_STATUS_DISCONNECT;
+                    s_power_suspended = true;
+                } else {
+                    s_power_suspend_failed = true;
+                }
+            }
+            delay(10);
+            continue;
+        }
+
+        if (s_power_suspended) {
+            s_power_suspended = false;
+            s_power_suspend_failed = false;
+            s_power_resume_reconnect = true;
+            knomi_config_require |= WEB_POST_LOCAL_HOSTNAME |
+                                    WEB_POST_WIFI_CONFIG_MODE |
+                                    WEB_POST_WIFI_CONFIG_AP |
+                                    WEB_POST_WIFI_CONFIG_STA;
+        }
+
         wifi_scan_refresh();
         wifi_config_loop(false);
 

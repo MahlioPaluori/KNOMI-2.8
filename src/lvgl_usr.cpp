@@ -11,6 +11,7 @@
 #include "ui_overlay/ui_root_layout.h"
 #include "ui_overlay/status_bar/status_bar.h"
 #include "ui_overlay/status_bar/status_bar_runtime.h"
+#include "power_manager.h"
 
 
 /****************** lvgl ui call function ******************/
@@ -131,6 +132,7 @@ void lvgl_ui_task(void * parameter) {
     lv_roller_set_selected(ui_roller_set_extrude_speed, 2, LV_ANIM_ON); // 10mm/s
     // Initialize extruder speed/length values from roller settings
     lv_btn_set_extrude(NULL);
+    power_manager_init();
 
     for(;;) {
         // lvgl task, must run in loop first.
@@ -156,6 +158,7 @@ void lvgl_ui_task(void * parameter) {
         lv_loop_auto_idle(status);
         lv_loop_btn_event();
         status_bar_runtime_update();
+        power_manager_update();
 
         delay(5);
     }

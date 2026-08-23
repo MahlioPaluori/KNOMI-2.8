@@ -2,11 +2,13 @@
 #include "knomi.h"
 #include "lv_overlay.h"
 #include "moonraker.h"
+#include "power_manager.h"
 
 static uint32_t touch_idle_sec = 0;
 
 void touch_idle_time_clear(void) {
     touch_idle_sec = 0;
+    power_manager_notify_user_activity();
 }
 
 #define GOT_IDLE_SECS 60  // 60s

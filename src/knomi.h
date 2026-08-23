@@ -66,6 +66,8 @@ typedef enum {
 }wifi_status_t;
 
 wifi_status_t wifi_get_connect_status(void);
+bool wifi_power_suspend(uint32_t timeout_ms);
+bool wifi_power_resume(void);
 
 extern int32_t lis2dw12_acc[3];
 

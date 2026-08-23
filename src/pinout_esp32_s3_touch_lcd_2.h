@@ -25,10 +25,13 @@
 // Backlight
 #define LCD_BL_PIN 1
 
-// CST816D touch (no hardware RST/IRQ pins - I2C only per Waveshare demo)
+// CST816D touch (TP_INT is wired to GPIO46; TP_RESET is not MCU-controlled)
 #define CST816S_SUPPORT
-#define CST816S_IRQ_PIN -1
+#define CST816S_IRQ_PIN 46
 #define CST816S_RST_PIN -1
+
+// External divider from USB VBUS to GPIO18 (LOW=battery, HIGH=USB present)
+#define VBUS_SENSE_PIN 18
 
 // Touch coordinate rotation (0=no rotation, 1=90°, 2=180°, 3=270°)
 #define CST816S_ROTATION 0
